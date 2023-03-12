@@ -6,7 +6,6 @@ import static java.util.stream.Collectors.toList;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 import jpabook.jpashop.domain.Address;
 import jpabook.jpashop.domain.Order;
 import jpabook.jpashop.domain.OrderItem;
@@ -17,6 +16,7 @@ import jpabook.jpashop.repository.order.query.OrderFlatDto;
 import jpabook.jpashop.repository.order.query.OrderItemQueryDto;
 import jpabook.jpashop.repository.order.query.OrderQueryDto;
 import jpabook.jpashop.repository.order.query.OrderQueryRepository;
+import jpabook.jpashop.service.query.OrderQueryService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,6 +29,7 @@ public class OrderApiController {
 
   private final OrderRepository orderRepository;
   private final OrderQueryRepository orderQueryRepository;
+  private final OrderQueryService orderQueryService;
 
   @GetMapping("/api/v1/orders")
   public List<Order> ordersV1() {
@@ -52,9 +53,7 @@ public class OrderApiController {
 
   @GetMapping("/api/v3/orders")
   public List<OrderDto> ordersV3() {
-    List<Order> orders = orderRepository.findAllWithItem();
-    return orders.stream().map(OrderDto::new)
-        .collect(toList());
+    return orderQueryService.ordersV3();
   }
 
   @GetMapping("/api/v3.1/orders")
@@ -92,7 +91,7 @@ public class OrderApiController {
   }
 
   @Getter
-  static class OrderDto {
+  public static class OrderDto {
 
     private Long orderId;
     private String name;
@@ -114,7 +113,7 @@ public class OrderApiController {
   }
 
   @Getter
-  static class OrderItemDto {
+  public static class OrderItemDto {
 
     private String itemName;
     private int orderPrice;
